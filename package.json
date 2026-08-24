@@ -1,0 +1,21 @@
+{
+  "name": "shree-shyam-mart",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shree Shyam Mart - Cash on Delivery E-Commerce Store",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:client": "npm run dev --workspace=client",
+    "dev:server": "npm run server --workspace=server",
+    "build": "npm run build --workspace=client",
+    "test": "npm run test --workspace=server",
+    "start": "npm run start --workspace=server"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
+  }
+}

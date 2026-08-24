@@ -3,7 +3,8 @@ import { NavLink } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useAppContext } from '../context/AppContext';
 import toast from "react-hot-toast";
-
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Search01Icon, ShoppingCart01Icon, UserCircleIcon, Menu01Icon } from '@hugeicons/core-free-icons';
 
 const Navbar = () => {
     const [open, setOpen] = React.useState(false);
@@ -45,14 +46,14 @@ const Navbar = () => {
                 <NavLink to="/">Contact</NavLink>
                 
 
-                <div className="hidden lg:flex items-center text-sm gap-2 border border-gray-300 px-3 rounded-full">
-                    <input onChange={(e)=> setSearchQuery(e.target.value)} className="py-1.5 w-full bg-transparent outline-none placeholder-gray-500" type="text" placeholder="Search products" />
-                     <img src={assets.search_icon} alt = 'search' className='w-4 h-4' />
+                <div className="hidden lg:flex items-center text-sm gap-2 border border-gray-300 px-3 py-1 rounded-full">
+                    <input onChange={(e)=> setSearchQuery(e.target.value)} className="py-1 w-full bg-transparent outline-none placeholder-gray-500" type="text" placeholder="Search products" />
+                    <HugeiconsIcon icon={Search01Icon} size={18} className='text-gray-500' />
                 </div>
 
-                <div onClick={()=> navigate("/cart")} className="relative cursor-pointer">
-                    <img src ={assets.nav_cart_icon} alt = 'cart' className='w-6 opacity-80'/>
-                    <button className="absolute -top-2 -right-3 text-xs text-white bg-primary w-[18px] h-[18px] rounded-full">{getCartCount()}</button>
+                <div onClick={()=> navigate("/cart")} className="relative cursor-pointer flex items-center">
+                    <HugeiconsIcon icon={ShoppingCart01Icon} size={24} className='text-gray-700 hover:text-primary transition-colors'/>
+                    <button className="absolute -top-2 -right-3 text-xs text-white bg-primary w-[18px] h-[18px] rounded-full flex items-center justify-center font-medium">{getCartCount()}</button>
                 </div>
 
                 {!user ? (<button onClick={()=> setShowUserLogin(true)} className="cursor-pointer px-8 py-2 bg-primary hover:bg-primary-dull transition text-white rounded-full">
@@ -60,8 +61,8 @@ const Navbar = () => {
                 </button>)
                 :
                 (
-                    <div className='relative group'>
-                        <img src={assets.profile_icon} className='w-10' alt="" />
+                    <div className='relative group flex items-center'>
+                        <HugeiconsIcon icon={UserCircleIcon} size={32} className='text-primary cursor-pointer' />
                         <ul className='hidden group-hover:block absolute top-10 right-0 bg-white shadow border border-gray-200 py-2.5 w-30 rounded-md text-sm z-40'>
                             <li onClick={()=> navigate("my-orders")} className='p-1.5 pl-3 hover:bg-primary/10 cursor-pointer'>My Orders</li>
                             <li onClick={logout} className='p-1.5 pl-3 hover:bg-primary/10 cursor-pointer'>Logout</li>
@@ -72,13 +73,12 @@ const Navbar = () => {
 
 
             <div className='flex items-center gap-6 sm:hidden'>
-                <div onClick={()=> navigate("/cart")} className="relative cursor-pointer">
-                    <img src ={assets.nav_cart_icon} alt = 'cart' className='w-6 opacity-80'/>
-                    <button className="absolute -top-2 -right-3 text-xs text-white bg-primary w-[18px] h-[18px] rounded-full">{getCartCount()}</button>
+                <div onClick={()=> navigate("/cart")} className="relative cursor-pointer flex items-center">
+                    <HugeiconsIcon icon={ShoppingCart01Icon} size={24} className='text-gray-700'/>
+                    <button className="absolute -top-2 -right-3 text-xs text-white bg-primary w-[18px] h-[18px] rounded-full flex items-center justify-center font-medium">{getCartCount()}</button>
                 </div>
-                <button onClick={() => open ? setOpen(false) : setOpen(true)} aria-label="Menu" className="">
-                {/* Menu Icon SVG */}
-                <img src={assets.menu_icon} alt='menu' />
+                <button onClick={() => open ? setOpen(false) : setOpen(true)} aria-label="Menu" className="cursor-pointer flex items-center">
+                    <HugeiconsIcon icon={Menu01Icon} size={24} className='text-gray-700' />
                 </button>
             </div>
 
@@ -88,7 +88,7 @@ const Navbar = () => {
                 <NavLink to="/" onClick={()=> setOpen(false)}>Home</NavLink>
                 <NavLink to="/products" onClick={()=> setOpen(false)}>All Product</NavLink>
                 {user &&
-                <NavLink to="/products" onClick={()=> setOpen(false)}>My Orders</NavLink>
+                <NavLink to="/my-orders" onClick={()=> setOpen(false)}>My Orders</NavLink>
                 }
                 <NavLink to="/" onClick={()=> setOpen(false)}>Contact</NavLink>
                 {!user ? (

@@ -20,7 +20,7 @@ export const AppContextProvider = ({children})=> {
     const [showUserLogin, setShowUserLogin] =useState(false);
     const [products, setProducts] =useState([]);
     const [cartItems, setCartItems] =useState({});
-    const [searchQuery, setSearchQuery ] =useState({});
+    const [searchQuery, setSearchQuery ] =useState("");
 
     // fetch seller status
     const fetchSeller = async ()=>{
@@ -111,8 +111,9 @@ export const AppContextProvider = ({children})=> {
         let totalAmount = 0;
         for(const items in cartItems){
             let itemInfo = products.find((product)=>product._id === items);
-            if(cartItems[items] > 0){
-                totalAmount += itemInfo.offerPrice * cartItems[items] 
+            if(itemInfo && cartItems[items] > 0){
+                const price = typeof itemInfo.offerPrice === 'number' ? itemInfo.offerPrice : (itemInfo.price || 0);
+                totalAmount += price * cartItems[items];
             }
         }
         return Math.floor(totalAmount * 100) / 100;

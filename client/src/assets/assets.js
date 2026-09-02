@@ -72,6 +72,9 @@ import barley_image from "./barley_image.png";
 import cosmetics_image from "./cosmetics_image.png";
 import pulses_image from "./pulses_image.jpg";
 import rajma_image from "./rajma_image.jpg";
+import dry_fruits_image from "./dry_fruits_image.png";
+import masala_image from "./masala_image.jpg";
+import oil_image from "./oil_image.jpg";
 
 export const assets = {
   logo,
@@ -117,6 +120,30 @@ export const categories = [
     bgColor: "#FEF6DA",
   },
   {
+    text: "Dry Fruits",
+    path: "Dry Fruits",
+    image: dry_fruits_image,
+    bgColor: "#FEE6CD",
+  },
+  {
+    text: "Grains & Cereals",
+    path: "Grains",
+    image: grain_image,
+    bgColor: "#F1E3F9",
+  },
+  {
+    text: "Masala",
+    path: "Masala",
+    image: masala_image,
+    bgColor: "#FEE0E0",
+  },
+  {
+    text: "Oil",
+    path: "Oil",
+    image: oil_image,
+    bgColor: "#E0F6FE",
+  },
+  {
     text: "Cosmetics",
     path: "Cosmetics",
     image: cosmetics_image,
@@ -146,12 +173,7 @@ export const categories = [
     image: bakery_image,
     bgColor: "#E0F6FE",
   },
-  {
-    text: "Grains & Cereals",
-    path: "Grains",
-    image: grain_image,
-    bgColor: "#F1E3F9",
-  },
+  
 ];
 
 export const footerLinks = [

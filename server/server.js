@@ -14,7 +14,7 @@ await connectCloudinary();
 
 // 3. Start HTTP Server
 const server = app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+    console.log(`Server is running on http://localhost:${port}`,'https://shree-shyam-mart-client.vercel.app');
 });
 
 // 4. Graceful Shutdown

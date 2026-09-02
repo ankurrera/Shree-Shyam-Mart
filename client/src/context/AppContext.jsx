@@ -59,7 +59,8 @@ export const AppContextProvider = ({children})=> {
                 toast.error(data.message)
             }
         } catch (error) {
-            toast.error(error.message)
+            // Silently ignore network errors (e.g. server not yet ready on local dev)
+            if (error.response) toast.error(error.response.data?.message || error.message)
         }
     }
 
@@ -133,7 +134,8 @@ export const AppContextProvider = ({children})=> {
                     toast.error(data.message)
                 }
             } catch (error) {
-                toast.error(error.message)  
+                // Silently ignore network errors on cart sync
+                if (error.response) toast.error(error.response.data?.message || error.message)
             }
         }
         if(user){

@@ -1,0 +1,40 @@
+name: Supabase Keep-Alive Ping
+
+on:
+  schedule:
+    # Runs every 3 days at 04:00 UTC (Supabase Free Tier pauses after 7 days of inactivity)
+    - cron: '0 4 */3 * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  keep-alive:
+    name: Ping Supabase & Backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase REST API
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || secrets.SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          if [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_ANON_KEY" ]; then
+            echo "Pinging Supabase REST API..."
+            RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+              -H "apikey: $SUPABASE_ANON_KEY" \
+              -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+              "$SUPABASE_URL/rest/v1/products?select=id&limit=1")
+            echo "Supabase REST API Response Code: $RESPONSE"
+          else
+            echo "SUPABASE_URL or SUPABASE_ANON_KEY not set in GitHub repository secrets. Skipping direct REST API ping."
+          fi
+
+      - name: Ping Live Server Health Endpoint
+        env:
+          API_SERVER_URL: ${{ secrets.API_SERVER_URL || secrets.SERVER_URL }}
+        run: |
+          if [ -n "$API_SERVER_URL" ]; then
+            echo "Pinging Backend Server /health endpoint..."
+            RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "$API_SERVER_URL/health")
+            echo "Backend Server Response Code: $RESPONSE"
+          else
+            echo "API_SERVER_URL not set in GitHub repository secrets. Skipping backend /health ping."
+          fi

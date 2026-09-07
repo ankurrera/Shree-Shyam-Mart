@@ -75,6 +75,7 @@ import rajma_image from "./rajma_image.jpg";
 import dry_fruits_image from "./dry_fruits_image.png";
 import masala_image from "./masala_image.jpg";
 import oil_image from "./oil_image.jpg";
+import vermicelli_image from "./vermicelli_image.png";
 
 export const assets = {
   logo,
@@ -108,12 +109,6 @@ export const assets = {
 
 export const categories = [
   {
-    text: "Organic veggies",
-    path: "Vegetables",
-    image: organic_vegitable_image,
-    bgColor: "#FEF6DA",
-  },
-  {
     text: "Pulses",
     path: "Pulses",
     image: pulses_image,
@@ -142,6 +137,12 @@ export const categories = [
     path: "Oil",
     image: oil_image,
     bgColor: "#E0F6FE",
+  },
+  {
+    text: "Organic veggies",
+    path: "Vegetables",
+    image: organic_vegitable_image,
+    bgColor: "#FEF6DA",
   },
   {
     text: "Cosmetics",
@@ -173,6 +174,12 @@ export const categories = [
     image: bakery_image,
     bgColor: "#E0F6FE",
   },
+  {
+    text: "Vermicelli and Pasta",
+    path: "Vermicelli and Pasta",
+    image: vermicelli_image,
+    bgColor: "#FEF6DA",
+  }
   
 ];
 

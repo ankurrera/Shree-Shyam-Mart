@@ -17,6 +17,7 @@ import SellerLayout from './pages/seller/SellerLayout';
 import ProductList from './pages/seller/ProductList';
 import Orders from './pages/seller/Orders';
 import AddProduct from './pages/seller/AddProduct';
+import Contact from './pages/contact';
 
 const App = () => {
 
@@ -39,10 +40,12 @@ const App = () => {
           <Route path='/cart' element ={<Cart />} />
           <Route path='/add-address' element ={<AddAddress />} />
           <Route path='/my-orders' element ={<MyOrders />} />
+          <Route path='/contact' element={<Contact />} />
           <Route path='/seller' element={isSeller ? <SellerLayout/> : <SellerLogin/>}>
             <Route index element={<AddProduct/>}/>
             <Route path='product-list' element={<ProductList/>}/>
             <Route path='orders' element={<Orders/>}/>
+            
           </Route>
 
         </Routes>

@@ -51,7 +51,7 @@ const footerSections = [
         label: 'Company',
         links: [
             { title: 'About Us', href: '/' },
-            { title: 'Contact Us', href: '/' },
+            { title: 'Contact Us', href: '/contact' },
             // { title: 'Privacy Policy', href: '/' },
             // { title: 'Terms of Service', href: '/' },
         ],
@@ -115,13 +115,13 @@ const Footer = () => {
                                     <ul className="space-y-1 text-xs text-slate-600">
                                         {section.links.map((link) => (
                                             <li key={link.title}>
-                                                <a
-                                                    href={link.href}
+                                                <Link
+                                                        to={link.href}
                                                     className="hover:text-primary inline-flex items-center gap-1.5 transition-colors duration-200 font-medium"
                                                 >
                                                     {link.icon && <link.icon size={13} className="text-primary shrink-0" />}
                                                     <span className="line-clamp-1">{link.title}</span>
-                                                </a>
+                                                </Link>
                                             </li>
                                         ))}
                                     </ul>

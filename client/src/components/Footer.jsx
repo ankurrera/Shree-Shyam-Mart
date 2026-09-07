@@ -42,9 +42,9 @@ const footerSections = [
         label: 'Shopping',
         links: [
             { title: 'All Products', href: '/products' },
-            { title: 'Fresh Fruits & Veg', href: '/products/fruits-and-vegetables' },
-            { title: 'Dairy & Eggs', href: '/products/dairy-and-eggs' },
-            { title: 'Beverages', href: '/products/beverages' },
+            // { title: 'Fresh Fruits & Veg', href: '/products/fruits-and-vegetables' },
+            // { title: 'Dairy & Eggs', href: '/products/dairy-and-eggs' },
+            // { title: 'Beverages', href: '/products/beverages' },
         ],
     },
     {
@@ -52,15 +52,15 @@ const footerSections = [
         links: [
             { title: 'About Us', href: '/' },
             { title: 'Contact Us', href: '/' },
-            { title: 'Privacy Policy', href: '/' },
-            { title: 'Terms of Service', href: '/' },
+            // { title: 'Privacy Policy', href: '/' },
+            // { title: 'Terms of Service', href: '/' },
         ],
     },
     {
         label: 'Trust & Guarantees',
         links: [
             { title: '100% Cash on Delivery', href: '#', icon: ShieldCheck },
-            { title: '15 Min Express Delivery', href: '#', icon: Clock },
+            { title: 'Fastest Delivery', href: '#', icon: Clock },
             { title: 'Free Returns & Exchange', href: '#', icon: Truck },
             { title: 'Customer Helpline', href: '#', icon: Phone },
         ],
@@ -157,4 +157,4 @@ function AnimatedContainer({ className, delay = 0.05, children }) {
 
 export default Footer;
 
-
+

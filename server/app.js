@@ -31,6 +31,8 @@ app.use(helmet({
 const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:5174',
+    'https://www.shreeshyammart.in',
+    'https://shreeshyammart.in',
     ...(process.env.CLIENT_URL ? [process.env.CLIENT_URL] : [])
 ];
 

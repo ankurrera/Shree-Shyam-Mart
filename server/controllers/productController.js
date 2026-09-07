@@ -252,3 +252,118 @@ export const updateStockQuantity = async (req, res) => {
         return res.status(500).json({ success: false, message: "Unable to update stock quantity" });
     }
 };
+// update product details : /api/product/update
+export const updateProduct = async (req, res) => {
+    try {
+        const {
+            productId,
+            name,
+            description,
+            price,
+            offerPrice,
+            category,
+            weight
+        } = req.body;
+
+        if (!productId || typeof productId !== 'string') {
+            return res.status(400).json({
+                success: false,
+                message: "Product ID is required"
+            });
+        }
+
+        const isIdValid =
+            /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(productId) ||
+            /^[0-9a-fA-F]{24}$/.test(productId);
+
+        if (!isIdValid) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid product ID format"
+            });
+        }
+
+        const cleanName = String(name || '').trim();
+        const cleanCategory = String(category || '').trim();
+        const cleanWeight = String(weight || '').trim();
+
+        if (!cleanName) {
+            return res.status(400).json({
+                success: false,
+                message: "Product name is required"
+            });
+        }
+
+        if (!cleanCategory) {
+            return res.status(400).json({
+                success: false,
+                message: "Category is required"
+            });
+        }
+
+        const numericPrice = Number(price);
+        const numericOfferPrice = Number(offerPrice);
+
+        if (!Number.isFinite(numericPrice) || numericPrice < 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Price must be a valid non-negative number"
+            });
+        }
+
+        if (!Number.isFinite(numericOfferPrice) || numericOfferPrice < 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Offer price must be a valid non-negative number"
+            });
+        }
+
+        const cleanDescription = Array.isArray(description)
+            ? description
+            : [String(description || '')];
+
+        const updateRes = await query(
+            `UPDATE products
+             SET
+                name = $1,
+                description = $2,
+                price = $3,
+                offer_price = $4,
+                category = $5,
+                weight = $6,
+                updated_at = NOW()
+             WHERE id = $7
+             RETURNING *`,
+            [
+                cleanName,
+                JSON.stringify(cleanDescription),
+                numericPrice,
+                numericOfferPrice,
+                cleanCategory,
+                cleanWeight,
+                productId
+            ]
+        );
+
+        if (updateRes.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            });
+        }
+
+        return res.json({
+            success: true,
+            message: "Product updated successfully",
+            product: formatProduct(updateRes.rows[0])
+        });
+
+    } catch (error) {
+        console.error("Update product error:", error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to update product"
+        });
+    }
+};

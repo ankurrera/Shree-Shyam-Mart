@@ -2,7 +2,7 @@ import express from 'express';
 import authSeller from '../middleware/authSeller.js';
 import { upload } from '../configs/multer.js';
 
-import { addProduct, changeStock, productById, productList, updateStockQuantity } from '../controllers/productController.js';
+import { addProduct, changeStock, productById, productList, updateStockQuantity,updateProduct } from '../controllers/productController.js';
 
 const productRouter = express.Router();
 
@@ -12,6 +12,7 @@ productRouter.get('/id', productById); // Compatibility alias
 productRouter.get('/:id', productById);
 productRouter.post('/stock', authSeller, changeStock);
 productRouter.post('/update-stock', authSeller, updateStockQuantity);
+productRouter.post('/update', authSeller, updateProduct);
 
 export default productRouter;
-
+

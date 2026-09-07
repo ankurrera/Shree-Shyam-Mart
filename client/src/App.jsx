@@ -18,6 +18,7 @@ import ProductList from './pages/seller/ProductList';
 import Orders from './pages/seller/Orders';
 import AddProduct from './pages/seller/AddProduct';
 import Contact from './pages/contact';
+import MobileBottomDock from './components/MobileBottomDock';
 
 const App = () => {
 
@@ -31,7 +32,7 @@ const App = () => {
       <Toaster />
 
 
-      <div className={`${isSellerPath ? "" : "px-6 md:px-16 lg:px-24 xl:px-32"}`}>
+      <div className={`${isSellerPath ? "" : "px-6 md:px-16 lg:px-24 xl:px-32 pb-20 sm:pb-0"}`}>
         <Routes>
           <Route path='/' element ={<Home/>} />
           <Route path='/products' element ={<AllProducts />} />
@@ -51,6 +52,7 @@ const App = () => {
         </Routes>
       </div>
       {!isSellerPath && <Footer />}
+      <MobileBottomDock />
     </div>
   )
 }

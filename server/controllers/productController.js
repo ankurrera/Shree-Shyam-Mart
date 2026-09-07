@@ -252,118 +252,124 @@ export const updateStockQuantity = async (req, res) => {
         return res.status(500).json({ success: false, message: "Unable to update stock quantity" });
     }
 };
-// update product details : /api/product/update
+// update product details: /api/product/update
 export const updateProduct = async (req, res) => {
+    const images = req.files || [];
     try {
-        const {
-            productId,
-            name,
-            description,
-            price,
-            offerPrice,
-            category,
-            weight
-        } = req.body;
-
-        if (!productId || typeof productId !== 'string') {
-            return res.status(400).json({
-                success: false,
-                message: "Product ID is required"
-            });
+        let productData = req.body;
+        if (req.body.productData) {
+            try {
+                productData = typeof req.body.productData === 'string' ? JSON.parse(req.body.productData) : req.body.productData;
+            } catch {
+                return res.status(400).json({ success: false, message: "Invalid product data JSON" });
+            }
         }
 
-        const isIdValid =
-            /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(productId) ||
-            /^[0-9a-fA-F]{24}$/.test(productId);
+        const id = productData.productId || productData.id || productData._id || req.body.productId || req.body.id;
+        if (!id || typeof id !== 'string') {
+            return res.status(400).json({ success: false, message: "Product ID is required" });
+        }
 
+        const isIdValid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(id) ||
+                          /^[0-9a-fA-F]{24}$/.test(id);
         if (!isIdValid) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid product ID format"
-            });
+            return res.status(400).json({ success: false, message: "Invalid product ID format" });
         }
 
-        const cleanName = String(name || '').trim();
-        const cleanCategory = String(category || '').trim();
-        const cleanWeight = String(weight || '').trim();
+        const existingRes = await query('SELECT * FROM products WHERE id = $1', [id]);
+        if (existingRes.rows.length === 0) {
+            return res.status(404).json({ success: false, message: "Product not found" });
+        }
+        const existing = existingRes.rows[0];
 
-        if (!cleanName) {
-            return res.status(400).json({
-                success: false,
-                message: "Product name is required"
-            });
+        let imagesUrl = null;
+        if (images && images.length > 0) {
+            imagesUrl = await Promise.all(
+                images.map(async (item) => {
+                    try {
+                        const result = await cloudinary.uploader.upload(item.path, { resource_type: 'image' });
+                        return result.secure_url;
+                    } finally {
+                        if (item.path && fs.existsSync(item.path)) {
+                            fs.unlink(item.path, () => {});
+                        }
+                    }
+                })
+            );
         }
 
-        if (!cleanCategory) {
-            return res.status(400).json({
-                success: false,
-                message: "Category is required"
-            });
+        const name = productData.name !== undefined ? String(productData.name).trim() : existing.name;
+        if (!name) {
+            return res.status(400).json({ success: false, message: "Product name cannot be empty" });
         }
 
-        const numericPrice = Number(price);
-        const numericOfferPrice = Number(offerPrice);
-
-        if (!Number.isFinite(numericPrice) || numericPrice < 0) {
-            return res.status(400).json({
-                success: false,
-                message: "Price must be a valid non-negative number"
-            });
+        let description = existing.description;
+        if (productData.description !== undefined) {
+            description = Array.isArray(productData.description)
+                ? productData.description
+                : String(productData.description).split('\n').map(s => s.trim()).filter(Boolean);
         }
 
-        if (!Number.isFinite(numericOfferPrice) || numericOfferPrice < 0) {
-            return res.status(400).json({
-                success: false,
-                message: "Offer price must be a valid non-negative number"
-            });
+        const category = productData.category !== undefined ? String(productData.category).trim() : existing.category;
+        const price = productData.price !== undefined ? parseFloat(productData.price) : parseFloat(existing.price);
+        const offerPrice = productData.offerPrice !== undefined ? parseFloat(productData.offerPrice) : parseFloat(existing.offer_price);
+
+        if (isNaN(price) || price < 0 || isNaN(offerPrice) || offerPrice < 0) {
+            return res.status(400).json({ success: false, message: "Prices must be non-negative numbers" });
         }
 
-        const cleanDescription = Array.isArray(description)
-            ? description
-            : [String(description || '')];
+        const stock = productData.stock !== undefined ? parseInt(productData.stock, 10) : parseInt(existing.stock, 10);
+        if (isNaN(stock) || stock < 0) {
+            return res.status(400).json({ success: false, message: "Stock must be a non-negative integer" });
+        }
+
+        const inStock = productData.inStock !== undefined ? Boolean(productData.inStock) : (stock > 0);
+        const weight = productData.weight !== undefined ? String(productData.weight).trim() : (existing.weight || '');
+
+        const finalImages = imagesUrl !== null
+            ? JSON.stringify(imagesUrl)
+            : (typeof existing.image === 'string' ? existing.image : JSON.stringify(existing.image || []));
 
         const updateRes = await query(
             `UPDATE products
-             SET
-                name = $1,
-                description = $2,
-                price = $3,
-                offer_price = $4,
-                category = $5,
-                weight = $6,
-                updated_at = NOW()
-             WHERE id = $7
+             SET name = $1,
+                 description = $2,
+                 price = $3,
+                 offer_price = $4,
+                 category = $5,
+                 stock = $6,
+                 in_stock = $7,
+                 weight = $8,
+                 image = $9,
+                 updated_at = NOW()
+             WHERE id = $10
              RETURNING *`,
             [
-                cleanName,
-                JSON.stringify(cleanDescription),
-                numericPrice,
-                numericOfferPrice,
-                cleanCategory,
-                cleanWeight,
-                productId
+                name,
+                typeof description === 'string' ? description : JSON.stringify(description),
+                price,
+                offerPrice,
+                category,
+                stock,
+                inStock,
+                weight,
+                finalImages,
+                id
             ]
         );
-
-        if (updateRes.rows.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: "Product not found"
-            });
-        }
 
         return res.json({
             success: true,
             message: "Product updated successfully",
             product: formatProduct(updateRes.rows[0])
         });
-
     } catch (error) {
-        console.error("Update product error:", error.message);
-
-        return res.status(500).json({
-            success: false,
-            message: "Unable to update product"
+        images.forEach((item) => {
+            if (item.path && fs.existsSync(item.path)) {
+                fs.unlink(item.path, () => {});
+            }
         });
+        console.error("Product update error:", error.message);
+        return res.status(500).json({ success: false, message: "Unable to update product" });
     }
 };

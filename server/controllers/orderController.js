@@ -162,9 +162,8 @@ export const placeOrderCOD = async (req, res) => {
                 }
             }
 
-            // 6. Calculate tax charge (2%)
-            const tax = Math.floor(subtotal * 0.02);
-            const totalAmount = subtotal + tax;
+            // 6. Calculate total amount (catalog prices are inclusive of all taxes)
+            const totalAmount = subtotal;
 
             // 7. Insert Order into PostgreSQL
             const orderRes = await client.query(

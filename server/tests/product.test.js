@@ -83,4 +83,67 @@ describe('Product API Integration Tests', () => {
             expect(res.body.message).toContain('Product not found');
         });
     });
+
+    describe('POST /api/product/update', () => {
+        let sellerCookie;
+
+        beforeEach(async () => {
+            const sellerRes = await request(app)
+                .post('/api/seller/login')
+                .send({
+                    email: process.env.SELLER_EMAIL || 'admin@example.com',
+                    password: process.env.SELLER_PASSWORD || 'greatstack123'
+                });
+            sellerCookie = sellerRes.headers['set-cookie']?.[0] || '';
+        });
+
+        it('should allow authenticated seller to edit product name, price, and offerPrice', async () => {
+            const res = await request(app)
+                .post('/api/product/update')
+                .set('Cookie', sellerCookie)
+                .send({
+                    id: testProduct1.id,
+                    name: 'Royal Gala Fresh Apples',
+                    price: 180,
+                    offerPrice: 140,
+                    category: 'Fruits & Vegetables',
+                    stock: 35
+                });
+
+            expect(res.status).toBe(200);
+            expect(res.body.success).toBe(true);
+            expect(res.body.product.name).toBe('Royal Gala Fresh Apples');
+            expect(res.body.product.price).toBe(180);
+            expect(res.body.product.offerPrice).toBe(140);
+            expect(res.body.product.category).toBe('Fruits & Vegetables');
+            expect(res.body.product.stock).toBe(35);
+        });
+
+        it('should reject unauthorized requests without seller token', async () => {
+            const res = await request(app)
+                .post('/api/product/update')
+                .send({
+                    id: testProduct1.id,
+                    name: 'Hacked Name'
+                });
+
+            expect(res.status).toBe(401);
+            expect(res.body.success).toBe(false);
+        });
+
+        it('should return 400 if product name is empty or prices are negative', async () => {
+            const res = await request(app)
+                .post('/api/product/update')
+                .set('Cookie', sellerCookie)
+                .send({
+                    id: testProduct1.id,
+                    name: '   ',
+                    price: -10
+                });
+
+            expect(res.status).toBe(400);
+            expect(res.body.success).toBe(false);
+        });
+    });
 });
+

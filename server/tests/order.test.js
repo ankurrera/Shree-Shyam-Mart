@@ -118,11 +118,11 @@ describe('Order Lifecycle, Inventory & Integrity Tests', () => {
             expect(res.status).toBe(200);
             expect(res.body.success).toBe(true);
 
-            // DB offerPrice = 80 * 3 = 240, tax = 2% of 240 = 4, total = 244
+            // DB offerPrice = 80 * 3 = 240 (prices are inclusive of all taxes, total = 240)
             const orderRes = await query('SELECT * FROM orders WHERE user_id = $1', [userAId]);
             expect(orderRes.rows.length).toBe(1);
             const order = orderRes.rows[0];
-            expect(parseFloat(order.amount)).toBe(244);
+            expect(parseFloat(order.amount)).toBe(240);
             expect(order.payment_method).toBe('COD');
             expect(order.payment_status).toBe('Pending');
             expect(Boolean(order.is_paid)).toBe(false);
